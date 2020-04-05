@@ -51,7 +51,22 @@ function _update()
 end
 
 function _draw()
-    -- run every frame
+    if playing == false then
+        cls()
+        cursor(7,2)
+        print("It is a beautiful day")
+        print("in the village and you") 
+        print("are an AI who has been")
+        print("sent out to discover")
+        print("the meaning of")
+        print("KINDNESS.")
+        if btn(5) then
+            playing=true
+        end
+    else
+        cls()
+        -- do stuff
+    end
 end
 
 
