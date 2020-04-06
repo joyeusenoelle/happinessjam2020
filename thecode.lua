@@ -5,6 +5,7 @@ playing = false
 music_going = false
 
 SPRITESIZE = 16
+NPCHEIGHT = 24
 
 LEFT  = {-1,0}
 RIGHT = {1,0}
@@ -20,12 +21,9 @@ pl.width = 16
 pl.sprite = 0
 pl.bsprite
 pl.speed = 1
-pl.dir = 0
-pl.width = 16
-pl.height = 16
-pl.top = pl.y + pl.height - 8
-pl.bottom = pl.y + pl.height
-pl.right = pl.x + pl.width
+pl.dir = 1
+pl.cbox = {pl.x, pl.x + pl.width, pl.y + pl.height - 8, pl.y + pl.height}
+pl.ibox = {pl.cbox[0] - 2, pl.cbox[1] + 2, pl.cbox[2] - 2, pl.cbox[3] + 2}
 
 actors = {}
 
@@ -46,6 +44,9 @@ end
 -- TODO: change this so that it's arbitrary, but
 -- the top half of the sprite is "transparent"
 function move(ent, dctn) 
+    if dctn == LEFT then
+        target = ent.cbox[0] - 1, 
+
     if ent.moving == false then
         tarx = ent.x + dctn[0]*SPRITESIZE
         tary = ent.y + dctn[1]*SPRITESIZE
