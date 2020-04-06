@@ -27,6 +27,11 @@ pl.ibox = {pl.cbox[0] - 2, pl.cbox[1] + 2, pl.cbox[2] - 2, pl.cbox[3] + 2}
 
 actors = {}
 
+function calculateboxes(ent)
+    ent.cbox = {ent.x, ent.x + ent.width, ent.y + ent.height - 8, ent.y + ent.height}
+    ent.ibox = {ent.cbox[0] - 2, ent.cbox[1] + 2, ent.cbox[2] - 2, ent.cbox[3] + 2}
+end
+
 function addactor(ent)
     table.insert(actors, ent)
 end
@@ -39,22 +44,110 @@ function iswalkable(x, y)
     return false
 end
 
+-- horiz and vert should each be one of (-1, 0, 1)
+function jostle(ent, horiz, vert)
+    ent.x = ent.x + horiz
+    ent.y = ent.y + vert
+    calculateboxes(ent)
+end
+
 -- ent is the entity that's moving
 -- dctn is one of LEFT, RIGHT, UP, or DOWN
 -- TODO: change this so that it's arbitrary, but
 -- the top half of the sprite is "transparent"
-function move(ent, dctn) 
+function move(ent, dctn)
+    colliding = 0 
     if dctn == LEFT then
-        target = ent.cbox[0] - 1, 
-
-    if ent.moving == false then
-        tarx = ent.x + dctn[0]*SPRITESIZE
-        tary = ent.y + dctn[1]*SPRITESIZE
-        if iswalkable(tarx, tary) then
-            ent.moving = true
-            ent.tarx = tarx
-            ent.tary = tary
-            ent.movedctn = dctn
+        clsns = {}
+        for i in ent.cbox[2], ent.cbox[3], 1 do
+            if not iswalkable(ent.cbox[0]-1, i) then
+                table.insert(clsns, 1)
+            else
+                table.insert(clsns, 0)
+            end
+        end
+        c = 0
+        for j in clsns do
+            c = c + j
+        end
+        if j == 1 then
+            if clsns[1] == 1 then
+                jostle(ent, -1, 1)
+            else if clsns[8] == 1 then
+                jostle(ent, -1, -1)
+            end
+        end
+        if j == 0 then
+            jostle(ent, -1, 0)
+        end
+    else if dctn = RIGHT then
+        clsns = {}
+        for i in ent.cbox[2], ent.cbox[3], 1 do
+            if not iswalkable(ent.cbox[1]+1, i) then
+                table.insert(clsns, 1)
+            else
+                table.insert(clsns, 0)
+            end
+        end
+        c = 0
+        for j in clsns do
+            c = c + j
+        end
+        if j == 1 then
+            if clsns[1] == 1 then
+                jostle(ent, 1, 1)
+            else if clsns[8] == 1 then
+                jostle(ent, 1, -1)
+            end
+        end
+        if j == 0 then
+            jostle(ent, 1, 0)
+        end
+    else if dctn = UP then
+        clsns = {}
+        for i in ent.cbox[0], ent.cbox[1], 1 do
+            if not iswalkable(i, ent.cbox[2] - 1) then
+                table.insert(clsns, 1)
+            else
+                table.insert(clsns, 0)
+            end
+        end
+        c = 0
+        for j in clsns do
+            c = c + j
+        end
+        if j == 1 then
+            if clsns[1] == 1 then
+                jostle(ent, 1, -1)
+            else if clsns[16] == 1 then
+                jostle(ent, -1, -1)
+            end
+        end
+        if j == 0 then
+            jostle(ent, 0, -1)
+        end
+    else if dctn = DOWN then
+        clsns = {}
+        for i in ent.cbox[0], ent.cbox[1], 1 do
+            if not iswalkable(i, ent.cbox[3] + 1) then
+                table.insert(clsns, 1)
+            else
+                table.insert(clsns, 0)
+            end
+        end
+        c = 0
+        for j in clsns do
+            c = c + j
+        end
+        if j == 1 then
+            if clsns[1] == 1 then
+                jostle(ent, 1, 1)
+            else if clsns[16] == 1 then
+                jostle(ent, -1, 1)
+            end
+        end
+        if j == 0 then
+            jostle(ent, 0, 1)
         end
     end
     -- do things here
