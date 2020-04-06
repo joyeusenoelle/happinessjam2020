@@ -15,12 +15,23 @@ pl = {}
 pl.moving = false
 pl.x = 0
 pl.y = 0
+pl.height = 16
+pl.width = 16
 pl.sprite = 0
 pl.bsprite
 pl.speed = 1
 pl.dir = 0
-pl.width = 8
-pl.height = 8
+pl.width = 16
+pl.height = 16
+pl.top = pl.y + pl.height - 8
+pl.bottom = pl.y + pl.height
+pl.right = pl.x + pl.width
+
+actors = {}
+
+function addactor(ent)
+    table.insert(actors, ent)
+end
 
 function iswalkable(x, y)
     s = mget(x,y)
@@ -32,6 +43,8 @@ end
 
 -- ent is the entity that's moving
 -- dctn is one of LEFT, RIGHT, UP, or DOWN
+-- TODO: change this so that it's arbitrary, but
+-- the top half of the sprite is "transparent"
 function move(ent, dctn) 
     if ent.moving == false then
         tarx = ent.x + dctn[0]*SPRITESIZE
@@ -70,10 +83,19 @@ end
 
 function _init()
     -- do init things
+    -- make the collection of actors
+    addactor(pl)
 end
 
 function _update()
     -- run every frame
+    for a1 in all(actors) do
+        a1.top = a1.y + a1.height - 8
+        a1.bottom = a1.y + a1.height
+        a1.right = a1.x + a1.width
+        a1.left = a1.x
+    end
+    pl.top = pl.x + pl.height - 8
     if pl.moving then
         pl.x = pl.x + pl.movedctn[0]
         pl.y = pl.y + pl.movedctn[1]
@@ -98,6 +120,7 @@ function _draw()
         print("sent out to discover")
         print("the meaning of")
         print("KINDNESS.")
+        print("Press Z to start!")
         if btn(5) then
             playing=true
         end
